@@ -9,6 +9,7 @@ import Foundation
 
 extension ShotPlan {
     struct Configuration: Codable {
+        let workspace: String
         let scheme: String
         let testPlan: String
         let devices: [Device]
@@ -19,6 +20,7 @@ extension ShotPlan {
 
 extension ShotPlan.Configuration {
     static let defaultFileName: String = "ShotPlan.json"
+    static let defaultWorkspaceName: String = "YOUR_WORKSPACE"
     static let defaultSchemeName: String = "YOUR_SCHEME"
     static let defaultTestPlan: String = "YOUR_TESTPLAN"
     static let defaultTimeZone: String = "America/Los_Angeles"
@@ -29,8 +31,9 @@ extension ShotPlan.Configuration {
         // Device(simulatorName: "iPad Pro (12.9-inch) (2th generation)", displaySize: "12.9", homeStyle: .button),
     ]
     
-    static func defaultConfiguration(schemeName: String?, testPlan: String?) -> Self {
-        return Self(scheme: schemeName ?? defaultSchemeName,
+    static func defaultConfiguration(workspaceName: String?, schemeName: String?, testPlan: String?) -> Self {
+        return Self(workspace: workspaceName ?? defaultWorkspaceName,
+                    scheme: schemeName ?? defaultSchemeName,
                     testPlan: testPlan ?? defaultTestPlan,
                     devices: defaultDevices,
                     localizeSimulator: true,
