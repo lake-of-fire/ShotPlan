@@ -16,6 +16,9 @@ extension ShotPlan {
     struct Run: ParsableCommand {
         static var configuration = CommandConfiguration(abstract: "Starts creating screenshots based on your configuration.")
         
+        @Option(name: .short, help: "Name of your workspace.")
+        var workspaceName: String?
+        
         @Option(name: .short, help: "Name of your project scheme.")
         var schemeName: String?
         
@@ -27,6 +30,11 @@ extension ShotPlan {
         
         mutating func run() {
             let configurationFromFile = try? Configuration.load()
+            
+            guard let workspaceName = workspaceName ?? configurationFromFile?.workspace else {
+                print("\(Configuration.defaultWorkspaceName) not found. Create a configuration by running 'shotplan init'")
+                return
+            }
             
             guard let schemeName = schemeName ?? configurationFromFile?.scheme else {
                 print("\(Configuration.defaultSchemeName) not found. Create a configuration by running 'shotplan init'")
@@ -44,7 +52,7 @@ extension ShotPlan {
             
             let timeZone = timeZone ?? configurationFromFile?.timeZone ?? Configuration.defaultTimeZone
             
-            let configuration = Configuration(scheme: schemeName, testPlan: testPlan, devices: devices, localizeSimulator: localizeSimulator, timeZone: timeZone)
+            let configuration = Configuration(workspace: workspaceName, scheme: schemeName, testPlan: testPlan, devices: devices, localizeSimulator: localizeSimulator, timeZone: timeZone)
             let targetFolder = Project.targetDirectoryURL.relativePath
             let derivedDataPath = Project.derivedDataDirectoryURL.relativePath
             
@@ -65,7 +73,7 @@ extension ShotPlan {
                 let _ = try? Shell.call("mkdir -p \(screenshotsPath.quoted())")
                 
                 print("Running Tests …")
-                let _ = try? Shell.call("xcodebuild test -scheme \(configuration.scheme) -destination \"platform=iOS Simulator,name=\(device.simulatorName)\" -testPlan \(configuration.testPlan) -derivedDataPath \(derivedDataPath.quoted())")
+                let _ = try? Shell.call("xcodebuild test -workspace \(configuration.workspace) -scheme \(configuration.scheme) -destination \"platform=iOS Simulator,name=\(device.simulatorName)\" -testPlan \(configuration.testPlan) -derivedDataPath \(derivedDataPath.quoted())")
                 
                 print("Copying Screenshots …")
                 let _ = try? Shell.call("find \"\(derivedDataPath)/Logs/Test\" -maxdepth 1 -type d -exec xcparse screenshots {} \(screenshotsPath.quoted()) \\;")
@@ -81,6 +89,9 @@ extension ShotPlan {
     struct Init: ParsableCommand {
         static var configuration = CommandConfiguration(abstract: "Creates a configuration file.")
         
+        @Option(name: .short, help: "Name of your workspace.")
+        var workspaceName: String?
+        
         @Option(name: .short, help: "Name of your project scheme.")
         var schemeName: String?
         
@@ -91,6 +102,7 @@ extension ShotPlan {
             print("Creating default configuration …")
             
             let defaultConfiguration = Configuration.defaultConfiguration(
+                workspaceName: workspaceName,
                 schemeName: schemeName,
                 testPlan: testPlan)
             Configuration.save(contents: defaultConfiguration.data)
