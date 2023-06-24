@@ -4,7 +4,7 @@
 //
 //  Created by Devran on 14.07.22.
 //
-
+#if os(macOS)
 import Foundation
 
 struct Simulator {
@@ -100,3 +100,4 @@ struct Simulator {
         }
     }
 }
+#endif

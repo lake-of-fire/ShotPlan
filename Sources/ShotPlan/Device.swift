@@ -7,23 +7,23 @@
 
 import Foundation
 
-struct Device: Codable {
-    let simulatorName: String
-    let displaySize: String?
-    let homeStyle: HomeStyle?
-    var idiom: Idiom? {
+public struct Device: Codable {
+    public let simulatorName: String
+    public let displaySize: String?
+    public let homeStyle: HomeStyle?
+    public var idiom: Idiom? {
         return Idiom.allCases.first { idiom in
             simulatorName.contains(idiom.description)
         }
     }
     
-    enum Idiom: String, CaseIterable, Codable, CustomStringConvertible {
+    public enum Idiom: String, CaseIterable, Codable, CustomStringConvertible {
         case tablet
         case phone
         case watch
         case tv
         
-        var description: String {
+        public var description: String {
             switch self {
             case .tablet:
                 return "iPad"
@@ -37,11 +37,11 @@ struct Device: Codable {
         }
     }
     
-    enum HomeStyle: String, Codable, CustomStringConvertible {
+    public enum HomeStyle: String, Codable, CustomStringConvertible {
         case button
         case indicator
         
-        var description: String {
+        public var description: String {
             switch self {
             case .indicator:
                 return "Home Indicator"
@@ -51,7 +51,7 @@ struct Device: Codable {
         }
     }
     
-    var description: String {
+    public var description: String {
         return "\(idiom?.description ?? "") \(displaySize ?? "")-inch with \(homeStyle?.description ?? "")"
     }
 }

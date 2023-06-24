@@ -1,14 +1,18 @@
+#if os(macOS)
 import Foundation
 import ArgumentParser
 
 @main
-struct ShotPlan: ParsableCommand {
-    static var configuration = CommandConfiguration(
+public struct ShotPlan: ParsableCommand {
+    public static var configuration = CommandConfiguration(
         abstract: "A utility creating automated screenshots with Xcode Test Plans.",
         subcommands: [Init.self, Run.self, Info.self],
         defaultSubcommand: Info.self)
     
-    mutating func run() {
+    public mutating func run() {
+    }
+    
+    public init() {
     }
 }
 
@@ -16,43 +20,43 @@ extension ShotPlan {
     struct Run: ParsableCommand {
         static var configuration = CommandConfiguration(abstract: "Starts creating screenshots based on your configuration.")
         
-        @Option(name: .short, help: "Name of your workspace.")
+        @Option(name: .long, help: "Name of your workspace.")
         var workspaceName: String?
         
-        @Option(name: .short, help: "Name of your project scheme.")
+        @Option(name: .long, help: "Name of your project scheme.")
         var schemeName: String?
         
-        @Option(name: .short, help: "Name of your Xcode Test Plan.")
+        @Option(name: .long, help: "Name of your Xcode Test Plan.")
         var testPlan: String?
         
-        @Option(name: .short, help: "TimeZone for Simulator.")
+        @Option(name: .long, help: "TimeZone for Simulator.")
         var timeZone: String?
         
         mutating func run() {
-            let configurationFromFile = try? Configuration.load()
+            let configurationFromFile = try? ShotPlanConfiguration.load()
             
             guard let workspaceName = workspaceName ?? configurationFromFile?.workspace else {
-                print("\(Configuration.defaultWorkspaceName) not found. Create a configuration by running 'shotplan init'")
+                print("\(ShotPlanConfiguration.defaultWorkspaceName) not found. Create a configuration by running 'shotplan init'")
                 return
             }
             
             guard let schemeName = schemeName ?? configurationFromFile?.scheme else {
-                print("\(Configuration.defaultSchemeName) not found. Create a configuration by running 'shotplan init'")
+                print("\(ShotPlanConfiguration.defaultSchemeName) not found. Create a configuration by running 'shotplan init'")
                 return
             }
             
             guard let testPlan = testPlan ?? configurationFromFile?.testPlan else {
-                print("\(Configuration.defaultTestPlan) not found. Create a configuration by running 'shotplan init'")
+                print("\(ShotPlanConfiguration.defaultTestPlan) not found. Create a configuration by running 'shotplan init'")
                 return
             }
             
-            let devices = configurationFromFile?.devices ?? Configuration.defaultDevices
+            let devices = configurationFromFile?.devices ?? ShotPlanConfiguration.defaultDevices
             
             let localizeSimulator = configurationFromFile?.localizeSimulator ?? true
             
-            let timeZone = timeZone ?? configurationFromFile?.timeZone ?? Configuration.defaultTimeZone
+            let timeZone = timeZone ?? configurationFromFile?.timeZone ?? ShotPlanConfiguration.defaultTimeZone
             
-            let configuration = Configuration(workspace: workspaceName, scheme: schemeName, testPlan: testPlan, devices: devices, localizeSimulator: localizeSimulator, timeZone: timeZone)
+            let configuration = ShotPlanConfiguration(workspace: workspaceName, scheme: schemeName, testPlan: testPlan, devices: devices, localizeSimulator: localizeSimulator, timeZone: timeZone)
             let targetFolder = Project.targetDirectoryURL.relativePath
             let derivedDataPath = Project.derivedDataDirectoryURL.relativePath
             
@@ -101,14 +105,14 @@ extension ShotPlan {
         mutating func run() {
             print("Creating default configuration …")
             
-            let defaultConfiguration = Configuration.defaultConfiguration(
+            let defaultConfiguration = ShotPlanConfiguration.defaultConfiguration(
                 workspaceName: workspaceName,
                 schemeName: schemeName,
                 testPlan: testPlan)
-            Configuration.save(contents: defaultConfiguration.data)
+            ShotPlanConfiguration.save(contents: defaultConfiguration.data)
             
-            if Configuration.exists {
-                print("\(Configuration.defaultFileName) created.")
+            if ShotPlanConfiguration.exists {
+                print("\(ShotPlanConfiguration.defaultFileName) created.")
                 print("Call 'shotplan run' command to start creating screenshots.")
             }
         }
@@ -134,3 +138,4 @@ extension ShotPlan {
         }
     }
 }
+#endif

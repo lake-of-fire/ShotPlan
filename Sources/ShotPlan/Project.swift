@@ -7,18 +7,18 @@
 
 import Foundation
 
-struct Project {
-    static let fileManager = FileManager()
+public struct Project {
+    public static let fileManager = FileManager()
     
-    static var currentDirectoryURL: URL {
+    public static var currentDirectoryURL: URL {
         return URL(fileURLWithPath: fileManager.currentDirectoryPath)
     }
     
-    static var targetDirectoryURL: URL {
+    public static var targetDirectoryURL: URL {
         return currentDirectoryURL.appendingPathComponent("Screenshots", isDirectory: true)
     }
     
-    static var derivedDataDirectoryURL: URL {
+    public static var derivedDataDirectoryURL: URL {
         return fileManager.temporaryDirectory.appendingPathComponent("ShotPlan-DerivedData", isDirectory: true)
     }
 }

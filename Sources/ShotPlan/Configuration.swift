@@ -4,21 +4,19 @@
 //
 //  Created by Devran on 14.07.22.
 //
-
+#if os(macOS)
 import Foundation
 
-extension ShotPlan {
-    struct Configuration: Codable {
-        let workspace: String
-        let scheme: String
-        let testPlan: String
-        let devices: [Device]
-        let localizeSimulator: Bool
-        let timeZone: String
-    }
+public struct ShotPlanConfiguration: Codable {
+    public let workspace: String
+    public let scheme: String
+    public let testPlan: String
+    public let devices: [Device]
+    public let localizeSimulator: Bool
+    public let timeZone: String
 }
 
-extension ShotPlan.Configuration {
+public extension ShotPlanConfiguration {
     static let defaultFileName: String = "ShotPlan.json"
     static let defaultWorkspaceName: String = "YOUR_WORKSPACE"
     static let defaultSchemeName: String = "YOUR_SCHEME"
@@ -48,7 +46,7 @@ extension ShotPlan.Configuration {
     }
 }
 
-extension ShotPlan.Configuration {
+public extension ShotPlanConfiguration {
     static var configurationFileURL: URL {
         return Project.currentDirectoryURL.appendingPathComponent(defaultFileName)
     }
@@ -65,3 +63,4 @@ extension ShotPlan.Configuration {
         return try JSONDecoder().decode(self, from: Data(contentsOf: configurationFileURL))
     }
 }
+#endif

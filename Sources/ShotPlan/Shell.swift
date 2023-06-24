@@ -5,6 +5,7 @@
 //  Created by Devran on 14.07.22.
 //
 
+#if os(macOS)
 import Foundation
 
 struct Shell {
@@ -25,8 +26,9 @@ struct Shell {
         let output = String(data: data, encoding: .utf8)!
         
         print("$ \(command)")
-        // print(output)
+        print(output)
         
         return output
     }
 }
+#endif
